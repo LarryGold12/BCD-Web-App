@@ -1,3 +1,6 @@
 flask==2.3.2
-tensorflow-cpu==2.16.1
-pillow==10.3.0
+gunicorn==20.1.0
+tensorflow-cpu==2.10.0  # Or tensorflow if GPU is available
+numpy==1.23.5
+werkzeug==2.3.6
+pillow==9.5.0
