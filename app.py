@@ -2,12 +2,12 @@ import os
 import numpy as np
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
-import tensorflow as tf  # tensorflow-cpu in requirements.txt
+import tensorflow as tf  # Use tensorflow-cpu in requirements.txt for lighter deployments
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# Vercel-compatible config (uses /tmp for storage)
+# Configure upload folder (Vercel/Heroku/Render compatible)
 app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
@@ -15,9 +15,9 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 interpreter = tf.lite.Interpreter(model_path='optimized_model.tflite')
 interpreter.allocate_tensors()
 
-# Prediction function
 def predict_breast_cancer(image_path):
-    # Preprocess image (adjust to your model's requirements)
+    """Predict breast cancer class from an image."""
+    # Preprocess image (adjust to match your model's training)
     img = tf.keras.preprocessing.image.load_img(
         image_path, target_size=(224, 224))
     img_array = tf.keras.preprocessing.image.img_to_array(img) / 255.0
@@ -31,17 +31,17 @@ def predict_breast_cancer(image_path):
     interpreter.invoke()
     
     pred = interpreter.get_tensor(output_details[0]['index'])
-        # Map to YOUR original classes
-    classes = ["normal", "sick", "unknown"]  # Must match your model's training labels
-    predicted_class = classes[np.argmax(pred)]
+    
+    # Map to your model's classes
+    classes = ["normal", "benign", "malignant"]  # Update to match your labels
     return {
-        'prediction': ['normal', 'benign', 'malignant'][np.argmax(pred)],
+        'prediction': classes[np.argmax(pred)],
         'confidence': float(np.max(pred))
     }
 
-# API endpoint
 @app.route('/predict', methods=['POST'])
 def predict():
+    """API endpoint for predictions."""
     if 'file' not in request.files:
         return jsonify({'error': 'No file uploaded'}), 400
     
@@ -65,10 +65,11 @@ def predict():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# Health check
 @app.route('/')
 def home():
-    return "Breast Cancer Detection API"
+    """Health check endpoint."""
+    return "Breast Cancer Detection API - Healthy"
 
+# Local development (Gunicorn ignores this in production)
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
