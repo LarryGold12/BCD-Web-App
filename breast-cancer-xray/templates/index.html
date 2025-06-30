@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breast Cancer Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Breast Cancer Detection</h1>
+        <p class="subtitle">Upload a mammogram image for analysis</p>
+        
+        <div class="upload-container">
+            <input type="file" id="imageUpload" accept="image/*" class="upload-input">
+            <label for="imageUpload" class="upload-label">
+                <span id="fileName">Choose an image...</span>
+                <div class="upload-button">Browse</div>
+            </label>
+        </div>
+        
+        <div class="image-preview" id="imagePreview">
+            <img src="" alt="Preview" class="preview-image" id="previewImage">
+        </div>
+        
+        <button id="analyzeButton" class="analyze-button" disabled>Analyze Image</button>
+        
+        <div class="result-container" id="resultContainer">
+            <h2>Analysis Result</h2>
+            <div class="result" id="result">
+                <p>Upload an image and click "Analyze Image" to get a diagnosis.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
